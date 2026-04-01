@@ -1,0 +1,14 @@
+[
+  {
+    "name": "count accounts",
+    "method": "GET",
+    "path": "/api/count-accounts",
+    "expectedStatus": 200
+  },
+  {
+    "name": "search users",
+    "method": "GET",
+    "path": "/api/search-users?q=test&current_user_id=00000000-0000-0000-0000-000000000000",
+    "expectedStatus": 200
+  }
+]
