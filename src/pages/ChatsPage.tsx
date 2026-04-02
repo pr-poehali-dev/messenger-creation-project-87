@@ -4,11 +4,10 @@ import { getCurrentUser, getMyChats, searchUsers, getOrCreateChat, type Chat, ty
 
 export default function ChatsPage() {
   const nav = useNavigate();
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(() => getCurrentUser());
   const [chats, setChats] = useState<Chat[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<User[]>([]);
-  const [searching, setSearching] = useState(false);
 
   const loadChats = useCallback(() => {
     const u = getCurrentUser();
@@ -24,16 +23,14 @@ export default function ChatsPage() {
   }, [loadChats]);
 
   useEffect(() => {
-    if (!searchQuery.trim() || !currentUser) {
+    const u = getCurrentUser();
+    if (!searchQuery.trim() || !u) {
       setSearchResults([]);
-      setSearching(false);
       return;
     }
-    setSearching(true);
-    const results = searchUsers(searchQuery, currentUser.id);
+    const results = searchUsers(searchQuery, u.id);
     setSearchResults(results);
-    setSearching(false);
-  }, [searchQuery, currentUser]);
+  }, [searchQuery]);
 
   const openChat = (peerId: string) => {
     if (!currentUser) return;
@@ -112,17 +109,14 @@ export default function ChatsPage() {
       {/* Search Results */}
       {searchQuery && (
         <div className="flex-1 overflow-y-auto">
-          {searching && (
-            <div className="text-white/40 text-sm text-center py-8">Поиск...</div>
-          )}
-          {!searching && searchResults.length === 0 && (
+          {searchResults.length === 0 && (
             <div className="text-center py-12">
               <div className="text-4xl mb-3">🔍</div>
-              <p className="text-white/40 text-sm">Пользователь с @{searchQuery} не найден</p>
-              <p className="text-white/20 text-xs mt-1">Проверьте правильность написания</p>
+              <p className="text-white/40 text-sm">Пользователь @{searchQuery} не найден</p>
+              <p className="text-white/20 text-xs mt-1">Убедитесь, что второй аккаунт зарегистрирован</p>
             </div>
           )}
-          {!searching && searchResults.map((user) => (
+          {searchResults.map((user) => (
             <button
               key={user.id}
               onClick={() => openChat(user.id)}

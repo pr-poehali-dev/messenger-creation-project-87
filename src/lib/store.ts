@@ -256,12 +256,13 @@ export function updateProfile(
 
 // ─── SEARCH ───────────────────────────────────────────────────────────────────
 export function searchUsers(query: string, currentUserId: string): User[] {
-  if (!query) return [];
+  if (!query.trim()) return [];
   const users = getUsers();
+  const q = query.trim().toLowerCase().replace(/^@/, "");
   return users.filter(
     (u) =>
       u.id !== currentUserId &&
-      u.username.toLowerCase().includes(query.toLowerCase())
+      u.username.toLowerCase().includes(q)
   );
 }
 
